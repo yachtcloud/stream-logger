@@ -2,10 +2,9 @@
   "name": "stream-logger",
   "version": "1.0.0",
   "description": "",
-  "main": "/build/index.js",
+  "main": "index.js",
   "scripts": {
-    "build": "tsc --outDir build",
-    "postinstall": "npm run build"
+    "build": "tsc"
   },
   "author": "",
   "license": "ISC",
