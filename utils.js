@@ -1,5 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+exports.__esModule = true;
 exports.errorToString = exports.iso = void 0;
 var lodash_1 = require("lodash");
 function iso() {

@@ -1,5 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+exports.__esModule = true;
 exports.getAllLoggers = exports.getLoggerForRoute = exports.getLoggerForService = exports.createLogger = exports.BaseStreamLogger = exports.findLogger = void 0;
 var lodash_1 = require("lodash");
 var chalk_1 = require("chalk");
@@ -104,13 +104,13 @@ var BaseStreamLogger = /** @class */ (function () {
             // skip this step
         }
         else if (level === 'info') {
-            console.log(chalk_1.default.green(message));
+            console.log(chalk_1["default"].green(message));
         }
         else if (level === 'error') {
-            console.log(chalk_1.default.red(message));
+            console.log(chalk_1["default"].red(message));
         }
         else if (level === 'warning') {
-            console.log(chalk_1.default.yellow(message));
+            console.log(chalk_1["default"].yellow(message));
         }
         else {
             console.log(message);
