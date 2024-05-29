@@ -1,13 +1,18 @@
-import { isEmpty, isString, repeat } from 'lodash';
-import chalk from 'chalk';
-import { errorToString, iso } from './utils';
-const space = '    ';
-const validLevels = new Set(['error', 'warning', 'info', 'verbose', 'debug']);
-const instances = [];
-const lastEntries = new Map();
-export const findLogger = (meta) => instances.find(logger => logger.hasMeta(meta));
-export class BaseStreamLogger {
-    constructor(meta, initialLevel = 'verbose', options) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getAllLoggers = exports.getLoggerForRoute = exports.getLoggerForService = exports.createLogger = exports.BaseStreamLogger = exports.findLogger = void 0;
+var lodash_1 = require("lodash");
+var chalk_1 = require("chalk");
+var utils_1 = require("./utils");
+var space = '    ';
+var validLevels = new Set(['error', 'warning', 'info', 'verbose', 'debug']);
+var instances = [];
+var lastEntries = new Map();
+var findLogger = function (meta) { return instances.find(function (logger) { return logger.hasMeta(meta); }); };
+exports.findLogger = findLogger;
+var BaseStreamLogger = /** @class */ (function () {
+    function BaseStreamLogger(meta, initialLevel, options) {
+        if (initialLevel === void 0) { initialLevel = 'verbose'; }
         this._isTest = !!(options === null || options === void 0 ? void 0 : options.isTest);
         this._isDev = !!(options === null || options === void 0 ? void 0 : options.isDev);
         this._meta = meta;
@@ -21,18 +26,18 @@ export class BaseStreamLogger {
         this.setLevel(initialLevel);
         instances.push(this);
     }
-    hasMeta(meta) {
-        if (!meta || isEmpty(meta)) {
+    BaseStreamLogger.prototype.hasMeta = function (meta) {
+        if (!meta || (0, lodash_1.isEmpty)(meta)) {
             return false;
         }
-        for (const key in meta) {
+        for (var key in meta) {
             if (this._meta[key] !== meta[key]) {
                 return false;
             }
         }
         return true;
-    }
-    setLevel(level) {
+    };
+    BaseStreamLogger.prototype.setLevel = function (level) {
         if (!validLevels.has(level)) {
             return;
         }
@@ -63,22 +68,26 @@ export class BaseStreamLogger {
             this._enabled.debug = true;
         }
         return this;
-    }
-    get prefix() {
-        const { id, type } = this._meta;
-        if (id) {
-            return `${type}.${id}`;
-        }
-        else {
-            return `${type}`;
-        }
-    }
-    _logWithLevel(level, what, options) {
-        const { now, isoDate } = iso();
-        const msgRaw = [level, this.prefix, what].join(' ');
-        const message = this._isDev ? `${isoDate} ${msgRaw}` : msgRaw;
+    };
+    Object.defineProperty(BaseStreamLogger.prototype, "prefix", {
+        get: function () {
+            var _a = this._meta, id = _a.id, type = _a.type;
+            if (id) {
+                return "".concat(type, ".").concat(id);
+            }
+            else {
+                return "".concat(type);
+            }
+        },
+        enumerable: false,
+        configurable: true
+    });
+    BaseStreamLogger.prototype._logWithLevel = function (level, what, options) {
+        var _a = (0, utils_1.iso)(), now = _a.now, isoDate = _a.isoDate;
+        var msgRaw = [level, this.prefix, what].join(' ');
+        var message = this._isDev ? "".concat(isoDate, " ").concat(msgRaw) : msgRaw;
         if (options === null || options === void 0 ? void 0 : options.throttle) {
-            const last = lastEntries.get(msgRaw);
+            var last = lastEntries.get(msgRaw);
             if (last && ((now - last) < options.throttle)) {
                 return; // skip repeated logs
             }
@@ -86,7 +95,7 @@ export class BaseStreamLogger {
                 lastEntries.set(msgRaw, now);
             }
         }
-        const shouldWriteToConsole = (level === 'error') ||
+        var shouldWriteToConsole = (level === 'error') ||
             (level === 'debug' && this._enabled.debug) ||
             (level === 'info' && this._enabled.info) ||
             (level === 'verbose' && this._enabled.verbose) ||
@@ -95,13 +104,13 @@ export class BaseStreamLogger {
             // skip this step
         }
         else if (level === 'info') {
-            console.log(chalk.green(message));
+            console.log(chalk_1.default.green(message));
         }
         else if (level === 'error') {
-            console.log(chalk.red(message));
+            console.log(chalk_1.default.red(message));
         }
         else if (level === 'warning') {
-            console.log(chalk.yellow(message));
+            console.log(chalk_1.default.yellow(message));
         }
         else {
             console.log(message);
@@ -109,54 +118,60 @@ export class BaseStreamLogger {
         if (options === null || options === void 0 ? void 0 : options.trace) {
             console.trace();
         }
-    }
-    debug(what, options) {
+    };
+    BaseStreamLogger.prototype.debug = function (what, options) {
         this._logWithLevel('debug', what, options);
-    }
-    verbose(what, options) {
+    };
+    BaseStreamLogger.prototype.verbose = function (what, options) {
         this._logWithLevel('verbose', what, options);
-    }
-    info(what, options) {
+    };
+    BaseStreamLogger.prototype.info = function (what, options) {
         this._logWithLevel('info', what, options);
-    }
-    warn(what, options) {
+    };
+    BaseStreamLogger.prototype.warn = function (what, options) {
         this._logWithLevel('warning', what, options);
-    }
-    error(what, error, options) {
+    };
+    BaseStreamLogger.prototype.error = function (what, error, options) {
         if (error) {
-            this._logWithLevel('error', `${what} ${errorToString(error)}`, options);
+            this._logWithLevel('error', "".concat(what, " ").concat((0, utils_1.errorToString)(error)), options);
         }
         else {
             this._logWithLevel('error', what, options);
         }
-    }
-    silly(what) {
+    };
+    BaseStreamLogger.prototype.silly = function (what) {
         if (Math.random() < 0) {
             this.verbose(what);
         }
-    }
-    prettyPrint(what) {
-        if (!this._isTest && isString(what)) {
-            const text = space + what + space;
-            const line = repeat('-', text.length);
-            const prefix = this._isDev ? `${iso().isoDate} info: ` : 'info: ';
+    };
+    BaseStreamLogger.prototype.prettyPrint = function (what) {
+        if (!this._isTest && (0, lodash_1.isString)(what)) {
+            var text = space + what + space;
+            var line = (0, lodash_1.repeat)('-', text.length);
+            var prefix = this._isDev ? "".concat((0, utils_1.iso)().isoDate, " info: ") : 'info: ';
             console.log(prefix, line);
             console.log(prefix, text);
             console.log(prefix, line);
         }
-    }
-}
-export function createLogger(meta) {
+    };
+    return BaseStreamLogger;
+}());
+exports.BaseStreamLogger = BaseStreamLogger;
+function createLogger(meta) {
     return new BaseStreamLogger(meta);
 }
-export function getLoggerForService(id) {
-    const meta = { type: 'service', id };
-    return findLogger(meta) || createLogger(meta);
+exports.createLogger = createLogger;
+function getLoggerForService(id) {
+    var meta = { type: 'service', id: id };
+    return (0, exports.findLogger)(meta) || createLogger(meta);
 }
-export function getLoggerForRoute(id) {
-    const meta = { type: 'route', id };
-    return findLogger(meta) || createLogger(meta);
+exports.getLoggerForService = getLoggerForService;
+function getLoggerForRoute(id) {
+    var meta = { type: 'route', id: id };
+    return (0, exports.findLogger)(meta) || createLogger(meta);
 }
-export function getAllLoggers() {
+exports.getLoggerForRoute = getLoggerForRoute;
+function getAllLoggers() {
     return instances;
 }
+exports.getAllLoggers = getAllLoggers;
