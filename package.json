@@ -5,7 +5,7 @@
   "main": "/build/index.js",
   "scripts": {
     "build": "tsc --outDir build",
-    "postpublish": "npm run build"
+    "postinstall": "npm run build"
   },
   "author": "",
   "license": "ISC",
