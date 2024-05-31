@@ -1,4 +1,4 @@
-import { isEmpty, isString, repeat } from 'lodash'
+import {isEmpty, isString, isUndefined, repeat} from 'lodash'
 import * as chalk from 'chalk'
 import { errorToString, iso } from './utils'
 
@@ -9,7 +9,7 @@ export interface LogOptions {
   data?: any
 }
 
-export interface LoggerOptions {
+export interface EnvOptions {
   isDev?: boolean
   isTest?: boolean
 }
@@ -31,6 +31,9 @@ export interface EnabledFlags {
 
 const space = '    '
 
+let isDev = false
+let isTest = false
+
 const validLevels: Set<LogLevel> = new Set<LogLevel>(['error', 'warning', 'info', 'verbose', 'debug'])
 
 const instances: BaseStreamLogger[] = []
@@ -42,13 +45,8 @@ export const findLogger = (meta: any) => instances.find(logger => logger.hasMeta
 export class BaseStreamLogger {
   private readonly _meta: BaseLoggerMeta
   private readonly _enabled: EnabledFlags
-  private readonly _isDev: boolean
-  private readonly _isTest: boolean
 
-  constructor (meta: BaseLoggerMeta, initialLevel: LogLevel = 'verbose', options?: LoggerOptions) {
-    this._isTest = !!options?.isTest
-    this._isDev = !!options?.isDev
-
+  constructor (meta: BaseLoggerMeta, initialLevel: LogLevel = 'verbose') {
     this._meta = meta
 
     this._enabled = {
@@ -89,7 +87,7 @@ export class BaseStreamLogger {
     this._enabled.verbose = false
     this._enabled.debug = false
 
-    if (this._isTest || level === 'error') {
+    if (isTest || level === 'error') {
       // no other loggers enabled
     } else if (level === 'warning') {
       this._enabled.warning = true
@@ -124,7 +122,7 @@ export class BaseStreamLogger {
 
     const msgRaw = [level as string, this.prefix, what].join(' ')
 
-    const message = this._isDev ? `${isoDate} ${msgRaw}` : msgRaw
+    const message = isDev ? `${isoDate} ${msgRaw}` : msgRaw
 
     if (options?.throttle) {
       const last = lastEntries.get(msgRaw)
@@ -189,10 +187,10 @@ export class BaseStreamLogger {
   }
 
   prettyPrint (what: string): void {
-    if (!this._isTest && isString(what)) {
+    if (!isTest && isString(what)) {
       const text = space + what + space
       const line = repeat('-', text.length)
-      const prefix = this._isDev ? `${iso().isoDate} info: ` : 'info: '
+      const prefix = isDev ? `${iso().isoDate} info: ` : 'info: '
 
       console.log(prefix, line)
       console.log(prefix, text)
@@ -217,4 +215,13 @@ export function getLoggerForRoute (id: string): BaseStreamLogger {
 
 export function getAllLoggers (): BaseStreamLogger[] {
   return instances
+}
+
+export function setupEnvironment (env: EnvOptions) {
+  if (!isUndefined(env.isDev)) {
+    isDev = !!env.isDev
+  }
+  if (!isUndefined(env.isTest)) {
+    isTest = !!env.isTest
+  }
 }

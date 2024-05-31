@@ -1,19 +1,19 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllLoggers = exports.getLoggerForRoute = exports.getLoggerForService = exports.createLogger = exports.BaseStreamLogger = exports.findLogger = void 0;
+exports.setupEnvironment = exports.getAllLoggers = exports.getLoggerForRoute = exports.getLoggerForService = exports.createLogger = exports.BaseStreamLogger = exports.findLogger = void 0;
 const lodash_1 = require("lodash");
 const chalk = require("chalk");
 const utils_1 = require("./utils");
 const space = '    ';
+let isDev = false;
+let isTest = false;
 const validLevels = new Set(['error', 'warning', 'info', 'verbose', 'debug']);
 const instances = [];
 const lastEntries = new Map();
 const findLogger = (meta) => instances.find(logger => logger.hasMeta(meta));
 exports.findLogger = findLogger;
 class BaseStreamLogger {
-    constructor(meta, initialLevel = 'verbose', options) {
-        this._isTest = !!(options === null || options === void 0 ? void 0 : options.isTest);
-        this._isDev = !!(options === null || options === void 0 ? void 0 : options.isDev);
+    constructor(meta, initialLevel = 'verbose') {
         this._meta = meta;
         this._enabled = {
             error: true,
@@ -45,7 +45,7 @@ class BaseStreamLogger {
         this._enabled.info = false;
         this._enabled.verbose = false;
         this._enabled.debug = false;
-        if (this._isTest || level === 'error') {
+        if (isTest || level === 'error') {
             // no other loggers enabled
         }
         else if (level === 'warning') {
@@ -80,7 +80,7 @@ class BaseStreamLogger {
     _logWithLevel(level, what, options) {
         const { now, isoDate } = (0, utils_1.iso)();
         const msgRaw = [level, this.prefix, what].join(' ');
-        const message = this._isDev ? `${isoDate} ${msgRaw}` : msgRaw;
+        const message = isDev ? `${isoDate} ${msgRaw}` : msgRaw;
         if (options === null || options === void 0 ? void 0 : options.throttle) {
             const last = lastEntries.get(msgRaw);
             if (last && ((now - last) < options.throttle)) {
@@ -140,10 +140,10 @@ class BaseStreamLogger {
         }
     }
     prettyPrint(what) {
-        if (!this._isTest && (0, lodash_1.isString)(what)) {
+        if (!isTest && (0, lodash_1.isString)(what)) {
             const text = space + what + space;
             const line = (0, lodash_1.repeat)('-', text.length);
-            const prefix = this._isDev ? `${(0, utils_1.iso)().isoDate} info: ` : 'info: ';
+            const prefix = isDev ? `${(0, utils_1.iso)().isoDate} info: ` : 'info: ';
             console.log(prefix, line);
             console.log(prefix, text);
             console.log(prefix, line);
@@ -169,3 +169,12 @@ function getAllLoggers() {
     return instances;
 }
 exports.getAllLoggers = getAllLoggers;
+function setupEnvironment(env) {
+    if (!(0, lodash_1.isUndefined)(env.isDev)) {
+        isDev = !!env.isDev;
+    }
+    if (!(0, lodash_1.isUndefined)(env.isTest)) {
+        isTest = !!env.isTest;
+    }
+}
+exports.setupEnvironment = setupEnvironment;

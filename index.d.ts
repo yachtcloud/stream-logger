@@ -4,7 +4,7 @@ export interface LogOptions {
     trace?: boolean;
     data?: any;
 }
-export interface LoggerOptions {
+export interface EnvOptions {
     isDev?: boolean;
     isTest?: boolean;
 }
@@ -24,9 +24,7 @@ export declare const findLogger: (meta: any) => BaseStreamLogger;
 export declare class BaseStreamLogger {
     private readonly _meta;
     private readonly _enabled;
-    private readonly _isDev;
-    private readonly _isTest;
-    constructor(meta: BaseLoggerMeta, initialLevel?: LogLevel, options?: LoggerOptions);
+    constructor(meta: BaseLoggerMeta, initialLevel?: LogLevel);
     hasMeta(meta?: Partial<BaseLoggerMeta>): boolean;
     setLevel(level: LogLevel): this;
     get prefix(): string;
@@ -43,3 +41,4 @@ export declare function createLogger(meta: BaseLoggerMeta): BaseStreamLogger;
 export declare function getLoggerForService(id: string): BaseStreamLogger;
 export declare function getLoggerForRoute(id: string): BaseStreamLogger;
 export declare function getAllLoggers(): BaseStreamLogger[];
+export declare function setupEnvironment(env: EnvOptions): void;
