@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAllLoggers = exports.getLoggerForRoute = exports.getLoggerForService = exports.createLogger = exports.BaseStreamLogger = exports.findLogger = void 0;
 const lodash_1 = require("lodash");
-const chalk_1 = require("chalk");
+const chalk = require("chalk");
 const utils_1 = require("./utils");
 const space = '    ';
 const validLevels = new Set(['error', 'warning', 'info', 'verbose', 'debug']);
@@ -99,13 +99,13 @@ class BaseStreamLogger {
             // skip this step
         }
         else if (level === 'info') {
-            console.log(chalk_1.default.green(message));
+            console.log(chalk.green(message));
         }
         else if (level === 'error') {
-            console.log(chalk_1.default.red(message));
+            console.log(chalk.red(message));
         }
         else if (level === 'warning') {
-            console.log(chalk_1.default.yellow(message));
+            console.log(chalk.yellow(message));
         }
         else {
             console.log(message);

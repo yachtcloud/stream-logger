@@ -1,5 +1,5 @@
 import { isEmpty, isString, repeat } from 'lodash'
-import chalk from 'chalk'
+import * as chalk from 'chalk'
 import { errorToString, iso } from './utils'
 
 export interface LogOptions {
