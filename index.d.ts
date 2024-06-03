@@ -20,7 +20,8 @@ export interface EnabledFlags {
     verbose: boolean;
     debug: boolean;
 }
-export declare const findLogger: (meta: any) => BaseStreamLogger;
+export declare const findLoggerByMeta: (meta: any) => BaseStreamLogger;
+export declare function filterLoggersByMeta(meta: any): BaseStreamLogger[];
 export declare class BaseStreamLogger {
     private readonly _meta;
     private readonly _enabled;

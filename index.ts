@@ -40,7 +40,11 @@ const instances: BaseStreamLogger[] = []
 
 const lastEntries = new Map<string, number>()
 
-export const findLogger = (meta: any) => instances.find(logger => logger.hasMeta(meta))
+export const findLoggerByMeta = (meta: any) => instances.find(logger => logger.hasMeta(meta))
+
+export function filterLoggersByMeta (meta: any) {
+  return instances.filter(logger => logger.hasMeta(meta))
+}
 
 export class BaseStreamLogger {
   private readonly _meta: BaseLoggerMeta
@@ -205,12 +209,12 @@ export function createLogger(meta: BaseLoggerMeta): BaseStreamLogger {
 
 export function getLoggerForService (id: string): BaseStreamLogger {
   const meta: BaseLoggerMeta = { type: 'service', id }
-  return findLogger(meta) || createLogger(meta)
+  return findLoggerByMeta(meta) || createLogger(meta)
 }
 
 export function getLoggerForRoute (id: string): BaseStreamLogger {
   const meta: BaseLoggerMeta = { type: 'route', id }
-  return findLogger(meta) || createLogger(meta)
+  return findLoggerByMeta(meta) || createLogger(meta)
 }
 
 export function getAllLoggers (): BaseStreamLogger[] {

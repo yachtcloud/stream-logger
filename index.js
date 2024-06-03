@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setupEnvironment = exports.getAllLoggers = exports.getLoggerForRoute = exports.getLoggerForService = exports.createLogger = exports.BaseStreamLogger = exports.findLogger = void 0;
+exports.setupEnvironment = exports.getAllLoggers = exports.getLoggerForRoute = exports.getLoggerForService = exports.createLogger = exports.BaseStreamLogger = exports.filterLoggersByMeta = exports.findLoggerByMeta = void 0;
 const lodash_1 = require("lodash");
 const chalk = require("chalk");
 const utils_1 = require("./utils");
@@ -10,8 +10,12 @@ let isTest = false;
 const validLevels = new Set(['error', 'warning', 'info', 'verbose', 'debug']);
 const instances = [];
 const lastEntries = new Map();
-const findLogger = (meta) => instances.find(logger => logger.hasMeta(meta));
-exports.findLogger = findLogger;
+const findLoggerByMeta = (meta) => instances.find(logger => logger.hasMeta(meta));
+exports.findLoggerByMeta = findLoggerByMeta;
+function filterLoggersByMeta(meta) {
+    return instances.filter(logger => logger.hasMeta(meta));
+}
+exports.filterLoggersByMeta = filterLoggersByMeta;
 class BaseStreamLogger {
     constructor(meta, initialLevel = 'verbose') {
         this._meta = meta;
@@ -157,12 +161,12 @@ function createLogger(meta) {
 exports.createLogger = createLogger;
 function getLoggerForService(id) {
     const meta = { type: 'service', id };
-    return (0, exports.findLogger)(meta) || createLogger(meta);
+    return (0, exports.findLoggerByMeta)(meta) || createLogger(meta);
 }
 exports.getLoggerForService = getLoggerForService;
 function getLoggerForRoute(id) {
     const meta = { type: 'route', id };
-    return (0, exports.findLogger)(meta) || createLogger(meta);
+    return (0, exports.findLoggerByMeta)(meta) || createLogger(meta);
 }
 exports.getLoggerForRoute = getLoggerForRoute;
 function getAllLoggers() {
