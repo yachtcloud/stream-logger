@@ -29,6 +29,8 @@ export declare class BaseStreamLogger {
     hasMeta(meta?: Partial<BaseLoggerMeta>): boolean;
     setLevel(level: LogLevel): this;
     get prefix(): string;
+    get meta(): BaseLoggerMeta;
+    get enabled(): EnabledFlags;
     private _logWithLevel;
     debug(what: any, options?: LogOptions): void;
     verbose(what: any, options?: LogOptions): void;

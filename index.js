@@ -81,6 +81,12 @@ class BaseStreamLogger {
             return `${type}`;
         }
     }
+    get meta() {
+        return this._meta;
+    }
+    get enabled() {
+        return this._enabled;
+    }
     _logWithLevel(level, what, options) {
         const { now, isoDate } = (0, utils_1.iso)();
         const msgRaw = [level, this.prefix, what].join(' ');

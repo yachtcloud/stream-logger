@@ -121,6 +121,14 @@ export class BaseStreamLogger {
     }
   }
 
+  get meta (): BaseLoggerMeta {
+    return this._meta
+  }
+
+  get enabled (): EnabledFlags {
+    return this._enabled
+  }
+
   private _logWithLevel (level: LogLevel, what: any, options?: LogOptions): void {
     const { now, isoDate } = iso()
 
