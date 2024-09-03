@@ -1,13 +1,27 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setupEnvironment = exports.getAllLoggers = exports.getLoggerForRoute = exports.getLoggerForService = exports.createLogger = exports.BaseStreamLogger = exports.filterLoggersByMeta = exports.findLoggerByMeta = void 0;
+exports.setupEnvironment = exports.getAllLoggers = exports.getLoggerForRoute = exports.getLoggerForService = exports.createLogger = exports.BaseStreamLogger = exports.filterLoggersByMeta = exports.findLoggerByMeta = exports.LogLevelOptions = void 0;
 const lodash_1 = require("lodash");
 const chalk = require("chalk");
 const utils_1 = require("./utils");
+var LogLevelOptions;
+(function (LogLevelOptions) {
+    LogLevelOptions["error"] = "error";
+    LogLevelOptions["warning"] = "warning";
+    LogLevelOptions["info"] = "info";
+    LogLevelOptions["verbose"] = "verbose";
+    LogLevelOptions["debug"] = "debug";
+})(LogLevelOptions = exports.LogLevelOptions || (exports.LogLevelOptions = {}));
 const space = '    ';
 let isDev = false;
 let isTest = false;
-const validLevels = new Set(['error', 'warning', 'info', 'verbose', 'debug']);
+const validLevels = new Set([
+    LogLevelOptions.error,
+    LogLevelOptions.warning,
+    LogLevelOptions.info,
+    LogLevelOptions.verbose,
+    LogLevelOptions.debug
+]);
 const instances = [];
 const lastEntries = new Map();
 const findLoggerByMeta = (meta) => instances.find(logger => logger.hasMeta(meta));

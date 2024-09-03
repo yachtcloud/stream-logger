@@ -13,6 +13,13 @@ export interface BaseLoggerMeta {
     id: string;
 }
 export declare type LogLevel = 'error' | 'warning' | 'info' | 'verbose' | 'debug';
+export declare enum LogLevelOptions {
+    error = "error",
+    warning = "warning",
+    info = "info",
+    verbose = "verbose",
+    debug = "debug"
+}
 export interface EnabledFlags {
     error: boolean;
     warning: boolean;

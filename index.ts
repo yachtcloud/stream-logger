@@ -21,6 +21,14 @@ export interface BaseLoggerMeta {
 
 export type LogLevel = 'error' | 'warning' | 'info' | 'verbose' | 'debug'
 
+export enum LogLevelOptions {
+  error = 'error',
+  warning = 'warning',
+  info = 'info',
+  verbose = 'verbose',
+  debug = 'debug',
+}
+
 export interface EnabledFlags {
   error: boolean
   warning: boolean
@@ -34,7 +42,13 @@ const space = '    '
 let isDev = false
 let isTest = false
 
-const validLevels: Set<LogLevel> = new Set<LogLevel>(['error', 'warning', 'info', 'verbose', 'debug'])
+const validLevels: Set<LogLevel> = new Set<LogLevel>([
+  LogLevelOptions.error,
+  LogLevelOptions.warning,
+  LogLevelOptions.info,
+  LogLevelOptions.verbose,
+  LogLevelOptions.debug
+])
 
 const instances: BaseStreamLogger[] = []
 
